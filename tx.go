@@ -13,6 +13,11 @@ type WriterTx interface {
 	Insert(k []byte, v interface{}) (interface{}, bool)
 }
 
+// Snapshot will return a read-only snapshot of the cache.
+func (c *Cache) Snapshot() ReaderTx {
+	return c.tree.GetOrNew()
+}
+
 // Update will start a new writable transaction and pass it to the provided
 // function. The function can make any modifications, and should return true
 // if it wishes those modifications to be stored. Only one writable transaction
@@ -27,9 +32,4 @@ func (c *Cache) Update(fn func(WriterTx) bool) bool {
 		c.tree.Store(tx.Commit())
 	}
 	return ok
-}
-
-// View will call the provided function with a read-only snapshot of the cache.
-func (c *Cache) View(fn func(ReaderTx)) {
-	fn(c.tree.GetOrNew())
 }
