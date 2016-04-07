@@ -2,13 +2,18 @@ package coalescent
 
 import "github.com/hashicorp/go-immutable-radix"
 
-type ReaderTx interface {
+type Tx interface {
 	Get(k []byte) (interface{}, bool)
 	Root() *iradix.Node
 }
 
+type ReaderTx interface {
+	Tx
+	Len() int
+}
+
 type WriterTx interface {
-	ReaderTx
+	Tx
 	Delete(k []byte) (interface{}, bool)
 	Insert(k []byte, v interface{}) (interface{}, bool)
 }
